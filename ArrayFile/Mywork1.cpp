@@ -3,22 +3,31 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <fstream>
 
 using namespace std;
-
+void WriteArrayToFile(int N, double* arr, const char* fileName) {
+    ofstream fout(fileName);
+    if (!fout) return;
+    fout << N << "\n";
+    for (int i = 0; i < N; i++) fout << arr[i] << " ";
+    fout.close();
+}
 // ЗАДАЧА 1 - 6. Задано одновимірний масив А розміру N. Знайти кількість нульових елементів
 void task1() {
-    cout << "\n--- First task ---" << endl;
-    int N;
-    cout << " Input size Array N ";
-    cin >> N;
-
-    vector<int> A(N);
-    cout << " Input Array A \n";
-    for (int i = 0; i < N; i++) {
-        cout << " A[ " << i << "] ";
-        cin >> A[i];
+    ifstream inFile("input.txt");
+    cout << "\n--- First task ---  " << endl;
+    if (!inFile.is_open()) {
+        cout << "Error: File not found!" << endl;
+        return;
     }
+    int N;
+    if (!(inFile >> N)) return;
+    vector<int> A(N);
+    for(int i = 0; i < N; i++) {
+        inFile >> A[i]; 
+    }
+    inFile.close();
     int countzero = 0;
     for (int i = 0; i < N; i++) {
         if (A[i] == 0) {
@@ -79,11 +88,59 @@ void task2() {
         cout << "No negative elements after T" << endl;
     }
 }
+    
+        //ЗАДАЧА 3 6. Задано масив дійсних чисел А(N), N<=200 Розробити програму,яка будує масив дійсних чисел В(N) 
+        // за правилом bi є середніи арифметичним значенням чисел a1,a2,...an крім ai, i = 1,2,...n.
+
+    void task3() {
+    ifstream inFile("input.txt");
+
+    cout << "\n--- Task3 ---" << endl;
+
+    if (!inFile.is_open()) {
+        cout << "POMYLKA: Fail ne znaydeno za vkazanym shlyahom!" << endl;
+        system("pause");
+        return;
+    }
+
+    int N;
+    if (!(inFile >> N)) {
+        cout << "POMYLKA: Fail porozhniy abo nevirnyy format!" << endl;
+        return;
+    }
+
+    double* A = new double[N];
+    double totalsum = 0;
+    for (int i = 0; i < N; i++) {
+        inFile >> A[i];
+        totalsum += A[i];
+    }
+    inFile.close();
+
+    double* B = new double[N];
+    for (int i = 0; i < N; i++) {
+        B[i] = (totalsum - A[i]) / (N - 1);
+    }
+    WriteArrayToFile(N, B, "output3.txt");
+    
+    cout << "Array B (calculated from file): ";
+    for (int i = 0; i < N; i++) {
+        cout << B[i] << " ";
+    }
+    cout << endl;
+
+    delete[] A;
+    delete[] B;
+    return;
+
+}
+
+
 
 // ГОЛОВНА ФУНКЦІЯ
 int main() {
     int choice;
-    cout << "Select task (1 or 2): ";
+    cout << "Select task (1,2 or 3): ";
     cin >> choice;
 
     if (choice == 1) {
@@ -91,6 +148,9 @@ int main() {
     }
     else if (choice == 2) {
         task2();
+    }
+    else if (choice == 3) {
+        task3();
     }
     else {
         cout << "Wrong choice!" << endl;
